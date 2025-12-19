@@ -1,64 +1,38 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(
-    name = "role_permissions",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"role_id", "permission_id"})
-    }
+    name = "roles",
+    uniqueConstraints = @UniqueConstraint(columnNames = "roleName")
 )
-public class RolePermission {
+@Getter
+@Setter
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @NotBlank
+    @Column(nullable = false, length = 50)
+    private String roleName;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "permission_id", nullable = false)
-    private Permission permission;
+    @Column(length = 500)
+    private String description;
 
-    @Column(nullable = false, updatable = false)
-    private Instant grantedAt;
+    @Column(nullable = false)
+    private Boolean active = true;
 
-    // ===== Constructors =====
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    private List<UserRole> userRoles;
 
-    public RolePermission() {
-    }
-
-    public RolePermission(Role role, Permission permission) {
-        this.role = role;
-        this.permission = permission;
-    }
-
-    // ===== Lifecycle Hooks =====
-
-    @PrePersist
-    protected void onCreate() {
-        this.grantedAt = Instant.now();
-    }
-
-    // ===== Getters & Setters =====
-
-    public Long getId() {
-        return id;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public Permission getPermission() {
-        return permission;
-    }
-
-    public Instant getGrantedAt() {
-        return grantedAt;
-    }
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    private List<RolePermission> rolePermissions;
 }

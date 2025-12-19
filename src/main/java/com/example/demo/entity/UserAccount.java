@@ -1,28 +1,38 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(
     name = "user_accounts",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-    }
+    uniqueConstraints = @UniqueConstraint(columnNames = "email")
 )
+@Getter
+@Setter
 public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank
+    @Email
+    @Column(nullable = false, length = 255)
     private String email;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(nullable = false, length = 100)
     private String fullName;
 
-    @Column
+    @NotBlank
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -34,76 +44,17 @@ public class UserAccount {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    // ===== Constructors =====
-
-    public UserAccount() {
-    }
-
-    public UserAccount(String email, String fullName, Boolean active) {
-        this.email = email;
-        this.fullName = fullName;
-        this.active = active != null ? active : true;
-    }
-
-    // ===== Lifecycle Hooks =====
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserRole> userRoles;
 
     @PrePersist
-    protected void onCreate() {
+    public void onCreate() {
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        if (this.active == null) {
-            this.active = true;
-        }
     }
 
     @PreUpdate
-    protected void onUpdate() {
+    public void onUpdate() {
         this.updatedAt = Instant.now();
-    }
-
-    // ===== Getters & Setters =====
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
     }
 }
