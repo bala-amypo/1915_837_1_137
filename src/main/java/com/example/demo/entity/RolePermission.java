@@ -1,38 +1,34 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.Instant;
 
 @Entity
-@Table(
-    name = "roles",
-    uniqueConstraints = @UniqueConstraint(columnNames = "roleName")
-)
+@Table(name = "role_permissions")
 @Getter
 @Setter
-public class Role {
+public class RolePermission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false, length = 50)
-    private String roleName;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    @Column(length = 500)
-    private String description;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "permission_id")
+    private Permission permission;
 
-    @Column(nullable = false)
-    private Boolean active = true;
+    @Column(nullable = false, updatable = false)
+    private Instant grantedAt;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    private List<UserRole> userRoles;
-
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    private List<RolePermission> rolePermissions;
+    @PrePersist
+    public void onGrant() {
+        this.grantedAt = Instant.now();
+    }
 }
