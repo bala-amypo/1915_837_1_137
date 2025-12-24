@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.Permission;
-import com.example.demo.entity.Role;
 import com.example.demo.entity.RolePermission;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.PermissionRepository;
@@ -13,53 +12,70 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service   // ⭐ THIS IS WHAT SPRING WAS MISSING
+@Service
 public class RolePermissionServiceImpl implements RolePermissionService {
 
+    private final RolePermissionRepository rolePermissionRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
-    private final RolePermissionRepository rolePermissionRepository;
 
-    public RolePermissionServiceImpl(RoleRepository roleRepository,
-                                     PermissionRepository permissionRepository,
-                                     RolePermissionRepository rolePermissionRepository) {
+    public RolePermissionServiceImpl(RolePermissionRepository rolePermissionRepository,
+                                     RoleRepository roleRepository,
+                                     PermissionRepository permissionRepository) {
+        this.rolePermissionRepository = rolePermissionRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
-        this.rolePermissionRepository = rolePermissionRepository;
     }
 
     // ===============================
-    // ASSIGN PERMISSION TO ROLE
+    // GRANT PERMISSION
     // ===============================
     @Override
-    public RolePermission assignPermissionToRole(Long roleId, Long permissionId) {
+    public RolePermission grantPermission(RolePermission mapping) {
 
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Role not found"));
+        Long roleId = mapping.getRole().getId();
+        Long permissionId = mapping.getPermission().getId();
 
-        Permission permission = permissionRepository.findById(permissionId)
+        permissionRepository.findById(permissionId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Permission not found"));
 
-        RolePermission rolePermission = new RolePermission();
-        rolePermission.setRole(role);
-        rolePermission.setPermission(permission);
-        rolePermission.setGrantedAt(LocalDateTime.now());
-
-        return rolePermissionRepository.save(rolePermission);
-    }
-
-    // ===============================
-    // GET PERMISSIONS BY ROLE
-    // ===============================
-    @Override
-    public List<RolePermission> getPermissionsByRole(Long roleId) {
-
-        Role role = roleRepository.findById(roleId)
+        roleRepository.findById(roleId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Role not found"));
 
-        return rolePermissionRepository.findByRole(role);
+        mapping.setGrantedAt(LocalDateTime.now());
+        return rolePermissionRepository.save(mapping);
+    }
+
+    // ===============================
+    // GET PERMISSIONS FOR ROLE  ✅ CHANGED METHOD
+    // ===============================
+    @Override
+    public List<RolePermission> getPermissionsForRole(Long roleId) {
+        return rolePermissionRepository.findByRole_Id(roleId);
+    }
+
+    // ===============================
+    // GET MAPPING BY ID
+    // ===============================
+    @Override
+    public RolePermission getMappingById(Long id) {
+        return rolePermissionRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role-Permission mapping not found"));
+    }
+
+    // ===============================
+    // REVOKE PERMISSION
+    // ===============================
+    @Override
+    public void revokePermission(Long mappingId) {
+
+        RolePermission mapping = rolePermissionRepository.findById(mappingId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role-Permission mapping not found"));
+
+        rolePermissionRepository.delete(mapping);
     }
 }
