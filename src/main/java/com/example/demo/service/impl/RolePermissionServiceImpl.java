@@ -3,58 +3,63 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.Permission;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.RolePermission;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.PermissionRepository;
 import com.example.demo.repository.RolePermissionRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.service.RolePermissionService;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Service   // ⭐ THIS IS WHAT SPRING WAS MISSING
 public class RolePermissionServiceImpl implements RolePermissionService {
 
-    private final RolePermissionRepository rpRepo;
-    private final RoleRepository roleRepo;
-    private final PermissionRepository permRepo;
+    private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
+    private final RolePermissionRepository rolePermissionRepository;
 
-    public RolePermissionServiceImpl(RolePermissionRepository rpRepo,
-                                     RoleRepository roleRepo,
-                                     PermissionRepository permRepo) {
-        this.rpRepo = rpRepo;
-        this.roleRepo = roleRepo;
-        this.permRepo = permRepo;
+    public RolePermissionServiceImpl(RoleRepository roleRepository,
+                                     PermissionRepository permissionRepository,
+                                     RolePermissionRepository rolePermissionRepository) {
+        this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
+        this.rolePermissionRepository = rolePermissionRepository;
     }
 
+    // ===============================
+    // ASSIGN PERMISSION TO ROLE
+    // ===============================
     @Override
-    public RolePermission grantPermission(RolePermission mapping) {
-        Role role = roleRepo.findById(mapping.getRole().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+    public RolePermission assignPermissionToRole(Long roleId, Long permissionId) {
 
-        Permission permission = permRepo.findById(mapping.getPermission().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role not found"));
 
-        if (!role.isActive() || !permission.isActive()) {
-            throw new BadRequestException("Inactive role or permission");
-        }
+        Permission permission = permissionRepository.findById(permissionId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Permission not found"));
 
-        return rpRepo.save(mapping);
+        RolePermission rolePermission = new RolePermission();
+        rolePermission.setRole(role);
+        rolePermission.setPermission(permission);
+        rolePermission.setGrantedAt(LocalDateTime.now());
+
+        return rolePermissionRepository.save(rolePermission);
     }
 
+    // ===============================
+    // GET PERMISSIONS BY ROLE
+    // ===============================
     @Override
-    public List<RolePermission> getPermissionsForRole(Long roleId) {
-        return rpRepo.findByRole_Id(roleId);
-    }
+    public List<RolePermission> getPermissionsByRole(Long roleId) {
 
-    @Override
-    public RolePermission getMappingById(Long id) {
-        return rpRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Mapping not found"));
-    }
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role not found"));
 
-    @Override
-    public void revokePermission(Long mappingId) {
-        RolePermission rp = getMappingById(mappingId);
-        rpRepo.deleteById(rp.getId());
+        return rolePermissionRepository.findByRole(role);
     }
 }
