@@ -8,5 +8,12 @@ public interface RoleService {
 
     Role createRole(Role role);
 
+    Role updateRole(Long id, Role role);
+
+    Role getRoleById(Long id);
+
     List<Role> getAllRoles();
+
+    void deactivateRole(Long id);
 }
+    
