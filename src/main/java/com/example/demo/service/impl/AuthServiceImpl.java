@@ -12,10 +12,12 @@ import com.example.demo.service.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Service   // 👈 THIS IS THE FIX
 public class AuthServiceImpl implements AuthService {
 
     private final UserAccountRepository userAccountRepository;
@@ -33,7 +35,6 @@ public class AuthServiceImpl implements AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    // ================= REGISTER =================
     @Override
     public AuthResponseDto register(RegisterRequestDto request) {
 
@@ -57,7 +58,6 @@ public class AuthServiceImpl implements AuthService {
         return new AuthResponseDto(token);
     }
 
-    // ================= LOGIN =================
     @Override
     public AuthResponseDto login(AuthRequestDto request) {
 
@@ -68,8 +68,7 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        UserAccount user = userAccountRepository
-                .findByEmail(request.getEmail())
+        UserAccount user = userAccountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found"));
 
