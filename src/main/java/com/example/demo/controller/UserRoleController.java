@@ -1,28 +1,38 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.UserRole;
-import com.example.demo.repository.UserRoleRepository;
+import com.example.demo.service.UserRoleService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-roles")
+@RequestMapping("/api/user-roles")
 public class UserRoleController {
 
-    private final UserRoleRepository userRoleRepository;
+    private final UserRoleService userRoleService;
 
-    public UserRoleController(UserRoleRepository userRoleRepository) {
-        this.userRoleRepository = userRoleRepository;
+    public UserRoleController(UserRoleService userRoleService) {
+        this.userRoleService = userRoleService;
     }
 
     @PostMapping
-    public UserRole assignRole(@RequestBody UserRole userRole) {
-        return userRoleRepository.save(userRole);
+    public UserRole assignRole(@RequestBody UserRole mapping) {
+        return userRoleService.assignRole(mapping);
     }
 
-    @GetMapping
-    public List<UserRole> getAllUserRoles() {
-        return userRoleRepository.findAll();
+    @GetMapping("/user/{userId}")
+    public List<UserRole> getRolesForUser(@PathVariable Long userId) {
+        return userRoleService.getRolesForUser(userId);
+    }
+
+    @GetMapping("/{id}")
+    public UserRole getMapping(@PathVariable Long id) {
+        return userRoleService.getMappingById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void removeRole(@PathVariable Long id) {
+        userRoleService.removeRole(id);
     }
 }

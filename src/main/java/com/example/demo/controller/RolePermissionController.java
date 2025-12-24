@@ -1,28 +1,38 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.RolePermission;
-import com.example.demo.repository.RolePermissionRepository;
+import com.example.demo.service.RolePermissionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/role-permissions")
+@RequestMapping("/api/role-permissions")
 public class RolePermissionController {
 
-    private final RolePermissionRepository rolePermissionRepository;
+    private final RolePermissionService rolePermissionService;
 
-    public RolePermissionController(RolePermissionRepository rolePermissionRepository) {
-        this.rolePermissionRepository = rolePermissionRepository;
+    public RolePermissionController(RolePermissionService rolePermissionService) {
+        this.rolePermissionService = rolePermissionService;
     }
 
     @PostMapping
-    public RolePermission assignPermission(@RequestBody RolePermission rolePermission) {
-        return rolePermissionRepository.save(rolePermission);
+    public RolePermission grantPermission(@RequestBody RolePermission mapping) {
+        return rolePermissionService.grantPermission(mapping);
     }
 
-    @GetMapping
-    public List<RolePermission> getAllRolePermissions() {
-        return rolePermissionRepository.findAll();
+    @GetMapping("/role/{roleId}")
+    public List<RolePermission> getPermissionsForRole(@PathVariable Long roleId) {
+        return rolePermissionService.getPermissionsForRole(roleId);
+    }
+
+    @GetMapping("/{id}")
+    public RolePermission getMapping(@PathVariable Long id) {
+        return rolePermissionService.getMappingById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void revokePermission(@PathVariable Long id) {
+        rolePermissionService.revokePermission(id);
     }
 }
