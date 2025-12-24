@@ -1,34 +1,37 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Instant;
 
 @Entity
-@Table(name = "role_permissions")
-@Getter
-@Setter
 public class RolePermission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
+    @ManyToOne
     private Role role;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "permission_id")
+    @ManyToOne
     private Permission permission;
 
-    @Column(nullable = false, updatable = false)
     private Instant grantedAt;
 
     @PrePersist
-    public void onGrant() {
-        this.grantedAt = Instant.now();
+    public void prePersist() {
+        grantedAt = Instant.now();
     }
+
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    public Permission getPermission() { return permission; }
+    public void setPermission(Permission permission) { this.permission = permission; }
+
+    public Instant getGrantedAt() { return grantedAt; }
 }

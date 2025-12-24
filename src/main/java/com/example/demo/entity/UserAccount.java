@@ -1,60 +1,51 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Instant;
-import java.util.List;
 
 @Entity
-@Table(
-    name = "user_accounts",
-    uniqueConstraints = @UniqueConstraint(columnNames = "email")
-)
-@Getter
-@Setter
 public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Email
-    @Column(nullable = false, length = 255)
     private String email;
-
-    @NotBlank
-    @Column(nullable = false, length = 100)
     private String fullName;
-
-    @NotBlank
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private Boolean active = true;
+    private boolean active = true;
 
-    @Column(nullable = false, updatable = false)
     private Instant createdAt;
-
-    @Column(nullable = false)
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<UserRole> userRoles;
-
     @PrePersist
-    public void onCreate() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+    public void prePersist() {
+        createdAt = Instant.now();
+        updatedAt = Instant.now();
     }
 
     @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = Instant.now();
+    public void preUpdate() {
+        updatedAt = Instant.now();
     }
+
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+
+    public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
 }

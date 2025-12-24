@@ -1,38 +1,28 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
 
 @Entity
-@Table(
-    name = "roles",
-    uniqueConstraints = @UniqueConstraint(columnNames = "roleName")
-)
-@Getter
-@Setter
 public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false, length = 50)
     private String roleName;
-
-    @Column(length = 500)
     private String description;
+    private boolean active = true;
 
-    @Column(nullable = false)
-    private Boolean active = true;
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    private List<UserRole> userRoles;
+    public String getRoleName() { return roleName; }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    private List<RolePermission> rolePermissions;
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
