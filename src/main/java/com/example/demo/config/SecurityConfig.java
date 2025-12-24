@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
-import com.example.demo.security.JwtAuthenticationEntryPoint;
 import com.example.demo.security.JwtAuthenticationFilter;
+import com.example.demo.security.JwtAuthenticationEntryPoint;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -27,52 +27,42 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // 🔐 Password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 🔐 Authentication manager
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
-    // 🔐 JWT filter
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtUtil);
     }
 
-    // 🔐 Entry point
     @Bean
     public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
         return new JwtAuthenticationEntryPoint();
     }
 
-    // 🔐 Security rules
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    // PUBLIC endpoints
                     .requestMatchers(
                             "/auth/**",
                             "/simple-status",
                             "/swagger-ui/**",
                             "/v3/api-docs/**"
                     ).permitAll()
-
-                    // PROTECTED endpoints
-                    .requestMatchers("/api/**").authenticated()
-
-                    .anyRequest().permitAll()
+                    .anyRequest().authenticated()
             )
             .exceptionHandling(ex ->
                     ex.authenticationEntryPoint(jwtAuthenticationEntryPoint())

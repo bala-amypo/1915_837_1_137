@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         List<UserRole> roles = userRoleRepo.findByUser_Id(user.getId());
 
-        return new org.springframework.security.core.userdetails.User(
+        return new User(
                 user.getEmail(),
                 user.getPassword() == null ? "" : user.getPassword(),
                 roles.stream()

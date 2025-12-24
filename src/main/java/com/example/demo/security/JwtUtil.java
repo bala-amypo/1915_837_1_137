@@ -1,24 +1,26 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 import java.util.Date;
 import java.util.Map;
 
 public class JwtUtil {
 
-    private final String secret = "testsecretkeytestsecretkey123456";
-    private final long expirationMillis = 3600000; // 1 hour
+    private static final String SECRET_KEY =
+            "testsecretkeytestsecretkeytestsecretkey12345";
 
-    public JwtUtil() {
-    }
+    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
@@ -31,12 +33,12 @@ public class JwtUtil {
     }
 
     public long getExpirationMillis() {
-        return expirationMillis;
+        return EXPIRATION;
     }
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
     }
