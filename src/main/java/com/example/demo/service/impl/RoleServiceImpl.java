@@ -5,50 +5,78 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.service.RoleService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service   // ✅ THIS IS MANDATORY
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleRepository repo;
+    private final RoleRepository roleRepository;
 
-    public RoleServiceImpl(RoleRepository repo) {
-        this.repo = repo;
+    public RoleServiceImpl(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
+    // ===============================
+    // CREATE ROLE
+    // ===============================
     @Override
     public Role createRole(Role role) {
-        if (repo.findByRoleName(role.getRoleName()).isPresent()) {
+
+        if (roleRepository.findByRoleName(role.getRoleName()).isPresent()) {
             throw new BadRequestException("Role already exists");
         }
-        return repo.save(role);
+
+        role.setActive(true);
+        return roleRepository.save(role);
     }
 
+    // ===============================
+    // UPDATE ROLE
+    // ===============================
     @Override
-    public Role updateRole(Long id, Role role) {
-        Role existing = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+    public Role updateRole(Long id, Role updatedRole) {
 
-        existing.setRoleName(role.getRoleName());
-        existing.setDescription(role.getDescription());
-        return repo.save(existing);
+        Role existing = roleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role not found"));
+
+        existing.setRoleName(updatedRole.getRoleName());
+        existing.setDescription(updatedRole.getDescription());
+
+        return roleRepository.save(existing);
     }
 
-    @Override
-    public Role getRoleById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-    }
-
-    @Override
-    public List<Role> getAllRoles() {
-        return repo.findAll();
-    }
-
+    // ===============================
+    // DEACTIVATE ROLE
+    // ===============================
     @Override
     public void deactivateRole(Long id) {
-        Role role = getRoleById(id);
+
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role not found"));
+
         role.setActive(false);
-        repo.save(role);
+        roleRepository.save(role);
+    }
+
+    // ===============================
+    // GET ROLE BY ID
+    // ===============================
+    @Override
+    public Role getRoleById(Long id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role not found"));
+    }
+
+    // ===============================
+    // GET ALL ROLES
+    // ===============================
+    @Override
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 }
