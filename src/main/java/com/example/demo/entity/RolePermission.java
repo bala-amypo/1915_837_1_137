@@ -22,6 +22,7 @@ public class RolePermission {
     public void prePersist() {
         grantedAt = Instant.now();
     }
+    
 
     // getters & setters
     public Long getId() { return id; }
