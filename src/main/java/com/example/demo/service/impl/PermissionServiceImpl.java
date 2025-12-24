@@ -18,6 +18,9 @@ public class PermissionServiceImpl implements PermissionService {
         this.permissionRepository = permissionRepository;
     }
 
+    // ===============================
+    // CREATE PERMISSION
+    // ===============================
     @Override
     public Permission createPermission(Permission permission) {
 
@@ -30,7 +33,9 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionRepository.save(permission);
     }
 
-    // ✅ THIS METHOD WAS MISSING (CAUSE OF ERROR)
+    // ===============================
+    // UPDATE PERMISSION (AS REQUESTED)
+    // ===============================
     @Override
     public Permission updatePermission(Long id, Permission updatedPermission) {
 
@@ -38,12 +43,15 @@ public class PermissionServiceImpl implements PermissionService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Permission not found"));
 
+        // Update ONLY fields that exist
         existing.setPermissionKey(updatedPermission.getPermissionKey());
-        existing.setDescription(updatedPermission.getDescription());
 
         return permissionRepository.save(existing);
     }
 
+    // ===============================
+    // DEACTIVATE PERMISSION
+    // ===============================
     @Override
     public void deactivatePermission(Long id) {
 
@@ -55,6 +63,9 @@ public class PermissionServiceImpl implements PermissionService {
         permissionRepository.save(permission);
     }
 
+    // ===============================
+    // GET PERMISSION BY ID
+    // ===============================
     @Override
     public Permission getPermissionById(Long id) {
         return permissionRepository.findById(id)
@@ -62,6 +73,9 @@ public class PermissionServiceImpl implements PermissionService {
                         new ResourceNotFoundException("Permission not found"));
     }
 
+    // ===============================
+    // GET ALL PERMISSIONS
+    // ===============================
     @Override
     public List<Permission> getAllPermissions() {
         return permissionRepository.findAll();
