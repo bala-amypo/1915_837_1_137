@@ -3,10 +3,12 @@ package com.example.demo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
 
+@Component   // 👈 THIS IS THE FIX
 public class JwtUtil {
 
     private static final String SECRET_KEY =
