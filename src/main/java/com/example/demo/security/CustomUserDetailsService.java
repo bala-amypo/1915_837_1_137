@@ -6,10 +6,12 @@ import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.repository.UserRoleRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service   // 👈 THIS IS THE FIX
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserAccountRepository userRepo;
@@ -35,7 +37,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getEmail(),
                 user.getPassword() == null ? "" : user.getPassword(),
                 roles.stream()
-                        .map(r -> new SimpleGrantedAuthority(r.getRole().getRoleName()))
+                        .map(r -> new SimpleGrantedAuthority(
+                                r.getRole().getRoleName()))
                         .collect(Collectors.toList())
         );
     }
