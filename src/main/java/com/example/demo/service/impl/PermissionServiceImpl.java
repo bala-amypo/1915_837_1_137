@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service   // ✅ THIS IS THE FIX
+@Service
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
@@ -28,6 +28,20 @@ public class PermissionServiceImpl implements PermissionService {
 
         permission.setActive(true);
         return permissionRepository.save(permission);
+    }
+
+    // ✅ THIS METHOD WAS MISSING (CAUSE OF ERROR)
+    @Override
+    public Permission updatePermission(Long id, Permission updatedPermission) {
+
+        Permission existing = permissionRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Permission not found"));
+
+        existing.setPermissionKey(updatedPermission.getPermissionKey());
+        existing.setDescription(updatedPermission.getDescription());
+
+        return permissionRepository.save(existing);
     }
 
     @Override
