@@ -5,50 +5,49 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
-
+import org.springframework.stereotype.Service;
 import java.util.List;
 
+@Service
 public class UserAccountServiceImpl implements UserAccountService {
+    private final UserAccountRepository repository;
 
-    private final UserAccountRepository repo;
-
-    public UserAccountServiceImpl(UserAccountRepository repo) {
-        this.repo = repo;
+    public UserAccountServiceImpl(UserAccountRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public UserAccount createUser(UserAccount user) {
-        if (repo.existsByEmail(user.getEmail())) {
-            throw new BadRequestException("Duplicate email");
+        if (repository.existsByEmail(user.getEmail())) {
+            throw new BadRequestException("Email already exists");
         }
-        return repo.save(user);
+        return repository.save(user);
     }
 
     @Override
     public UserAccount updateUser(Long id, UserAccount user) {
-        UserAccount existing = repo.findById(id)
+        UserAccount existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
         existing.setEmail(user.getEmail());
         existing.setFullName(user.getFullName());
-        return repo.save(existing);
+        return repository.save(existing);
     }
 
     @Override
     public UserAccount getUserById(Long id) {
-        return repo.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override
     public List<UserAccount> getAllUsers() {
-        return repo.findAll();
+        return repository.findAll();
     }
 
     @Override
     public void deactivateUser(Long id) {
         UserAccount user = getUserById(id);
         user.setActive(false);
-        repo.save(user);
+        repository.save(user);
     }
 }
