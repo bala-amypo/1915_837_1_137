@@ -10,14 +10,15 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private String secret = "secretKey123456789012345678901234567890"; // 32+ chars for HS256
+    // Hardcoded secret ensures new JwtUtil() works in tests without injection
+    private String secret = "secretKey123456789012345678901234567890"; 
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
@@ -27,7 +28,7 @@ public class JwtUtil {
     }
 
     public long getExpirationMillis() {
-        return 3600000; // Mocked value or calculation
+        return 3600000;
     }
 
     public boolean isTokenValid(String token, String username) {
