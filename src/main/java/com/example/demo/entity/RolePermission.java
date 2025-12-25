@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
+@Table(name = "role_permissions")
 public class RolePermission {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,21 +18,18 @@ public class RolePermission {
 
     private Instant grantedAt;
 
+    public RolePermission() {}
+
     @PrePersist
     public void prePersist() {
-        grantedAt = Instant.now();
+        this.grantedAt = Instant.now();
     }
-    
 
-    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-
     public Permission getPermission() { return permission; }
     public void setPermission(Permission permission) { this.permission = permission; }
-
     public Instant getGrantedAt() { return grantedAt; }
 }
