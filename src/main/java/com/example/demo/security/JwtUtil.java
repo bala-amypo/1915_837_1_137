@@ -15,7 +15,6 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
     
-    // Secret key must be at least 32 bytes (256 bits) for HS256
     private String secret = "secretKey123456789012345678901234567890"; 
 
     private Key getSigningKey() {
