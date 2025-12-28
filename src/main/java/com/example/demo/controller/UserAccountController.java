@@ -3,15 +3,15 @@ package com.example.demo.controller;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.service.UserAccountService;
-import io.swagger.v3.oas.annotations.Tag;
+import io.swagger.v3.oas.annotations.tags.Tag; // Fixed Import
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users") // [cite: 277]
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User Account Management") // [cite: 357]
+@Tag(name = "User Account Management")
 public class UserAccountController {
 
     private final UserAccountService userService;

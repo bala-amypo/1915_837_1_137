@@ -3,15 +3,15 @@ package com.example.demo.controller;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.UserRole;
 import com.example.demo.service.UserRoleService;
-import io.swagger.v3.oas.annotations.Tag;
+import io.swagger.v3.oas.annotations.tags.Tag; // Fixed Import
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user-roles") // [cite: 297]
+@RequestMapping("/api/user-roles")
 @RequiredArgsConstructor
-@Tag(name = "User Role Assignment") // [cite: 361]
+@Tag(name = "User Role Assignment")
 public class UserRoleController {
 
     private final UserRoleService userRoleService;

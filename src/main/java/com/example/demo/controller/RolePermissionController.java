@@ -3,15 +3,15 @@ package com.example.demo.controller;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.RolePermission;
 import com.example.demo.service.RolePermissionService;
-import io.swagger.v3.oas.annotations.Tag;
+import io.swagger.v3.oas.annotations.tags.Tag; // Fixed Import
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/role-permissions") // [cite: 292]
+@RequestMapping("/api/role-permissions")
 @RequiredArgsConstructor
-@Tag(name = "Role Permission Mapping") // [cite: 360]
+@Tag(name = "Role Permission Mapping")
 public class RolePermissionController {
 
     private final RolePermissionService rolePermissionService;

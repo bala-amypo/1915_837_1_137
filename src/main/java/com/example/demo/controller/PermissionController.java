@@ -3,15 +3,15 @@ package com.example.demo.controller;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.Permission;
 import com.example.demo.service.PermissionService;
-import io.swagger.v3.oas.annotations.Tag;
+import io.swagger.v3.oas.annotations.tags.Tag; // Fixed Import
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/permissions") // [cite: 287]
+@RequestMapping("/api/permissions")
 @RequiredArgsConstructor
-@Tag(name = "Permission Management") // [cite: 359]
+@Tag(name = "Permission Management")
 public class PermissionController {
 
     private final PermissionService permissionService;

@@ -2,14 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.*;
 import com.example.demo.service.AuthService;
-import io.swagger.v3.oas.annotations.Tag;
+import io.swagger.v3.oas.annotations.tags.Tag; // Fixed Import
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth") // [cite: 272]
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication") // [cite: 356]
+@Tag(name = "Authentication")
 public class AuthController {
 
     private final AuthService authService;
