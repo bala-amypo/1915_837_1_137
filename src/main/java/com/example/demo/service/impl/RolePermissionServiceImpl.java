@@ -1,47 +1,54 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.RolePermission;
+import com.example.demo.entity.*;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.PermissionRepository;
-import com.example.demo.repository.RolePermissionRepository;
-import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.RolePermissionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RolePermissionServiceImpl implements RolePermissionService {
-    private final RolePermissionRepository repository;
+
+    private final RolePermissionRepository rolePermissionRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
 
-    public RolePermissionServiceImpl(RolePermissionRepository repository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
-        this.repository = repository;
-        this.roleRepository = roleRepository;
-        this.permissionRepository = permissionRepository;
-    }
-
     @Override
     public RolePermission grantPermission(RolePermission mapping) {
-        return repository.save(mapping);
+        Role role = roleRepository.findById(mapping.getRole().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        Permission permission = permissionRepository.findById(mapping.getPermission().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
+
+        if (!role.isActive() || !permission.isActive()) {
+            throw new BadRequestException("Role or Permission is inactive");
+        }
+
+        mapping.setRole(role);
+        mapping.setPermission(permission);
+        return rolePermissionRepository.save(mapping);
     }
 
     @Override
     public List<RolePermission> getPermissionsForRole(Long roleId) {
-        return repository.findByRole_Id(roleId);
+        return rolePermissionRepository.findByRole_Id(roleId);
     }
 
     @Override
     public RolePermission getMappingById(Long id) {
-        return repository.findById(id)
+        return rolePermissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Mapping not found"));
     }
 
     @Override
     public void revokePermission(Long mappingId) {
-        if (!repository.existsById(mappingId)) {
-             throw new ResourceNotFoundException("Mapping not found");
+        if (!rolePermissionRepository.existsById(mappingId)) {
+            throw new ResourceNotFoundException("Mapping not found");
         }
-        repository.deleteById(mappingId);
+        rolePermissionRepository.deleteById(mappingId);
     }
 }

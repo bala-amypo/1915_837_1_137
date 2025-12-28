@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
+
     private final UserRoleRepository userRoleRepository;
     private final UserAccountRepository userAccountRepository;
     private final RoleRepository roleRepository;
@@ -19,12 +20,12 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public UserRole assignRole(UserRole mapping) {
         UserAccount user = userAccountRepository.findById(mapping.getUser().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Role role = roleRepository.findById(mapping.getRole().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         if (!user.isActive() || !role.isActive()) {
-            throw new BadRequestException("Cannot assign role: User or Role is inactive");
+            throw new BadRequestException("User or Role is inactive");
         }
 
         mapping.setUser(user);
@@ -36,11 +37,11 @@ public class UserRoleServiceImpl implements UserRoleService {
     public List<UserRole> getRolesForUser(Long userId) {
         return userRoleRepository.findByUser_Id(userId);
     }
-    
+
     @Override
     public UserRole getMappingById(Long id) {
         return userRoleRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Mapping not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mapping not found"));
     }
 
     @Override
