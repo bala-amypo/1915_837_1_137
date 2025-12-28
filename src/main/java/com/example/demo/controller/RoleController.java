@@ -1,51 +1,44 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.Role;
 import com.example.demo.service.RoleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")
-@Tag(name = "Role Management")
+@RequestMapping("/api/roles") // [cite: 282]
+@RequiredArgsConstructor
+@Tag(name = "Role Management") // [cite: 358]
 public class RoleController {
-    private final RoleService service;
 
-    public RoleController(RoleService service) {
-        this.service = service;
-    }
+    private final RoleService roleService;
 
     @PostMapping
-    @Operation(summary = "Create new role")
-    public ResponseEntity<Role> createRole(@RequestBody Role role) {
-        return ResponseEntity.ok(service.createRole(role));
+    public ApiResponse createRole(@RequestBody Role role) {
+        return new ApiResponse(true, "Role created", roleService.createRole(role));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update role")
-    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
-        return ResponseEntity.ok(service.updateRole(id, role));
+    public ApiResponse updateRole(@PathVariable Long id, @RequestBody Role role) {
+        return new ApiResponse(true, "Role updated", roleService.updateRole(id, role));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get role by ID")
-    public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getRoleById(id));
+    public ApiResponse getRoleById(@PathVariable Long id) {
+        return new ApiResponse(true, "Role fetched", roleService.getRoleById(id));
     }
 
     @GetMapping
-    @Operation(summary = "Get all roles")
-    public ResponseEntity<List<Role>> getAllRoles() {
-        return ResponseEntity.ok(service.getAllRoles());
+    public List<Role> getAllRoles() {
+        return roleService.getAllRoles();
     }
 
     @PutMapping("/{id}/deactivate")
-    @Operation(summary = "Deactivate role")
-    public ResponseEntity<Void> deactivateRole(@PathVariable Long id) {
-        service.deactivateRole(id);
-        return ResponseEntity.ok().build();
+    public ApiResponse deactivateRole(@PathVariable Long id) {
+        roleService.deactivateRole(id);
+        return new ApiResponse(true, "Role deactivated");
     }
 }

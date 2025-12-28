@@ -1,51 +1,44 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.service.UserAccountService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
-@Tag(name = "User Account Management")
+@RequestMapping("/api/users") // [cite: 277]
+@RequiredArgsConstructor
+@Tag(name = "User Account Management") // [cite: 357]
 public class UserAccountController {
-    private final UserAccountService service;
 
-    public UserAccountController(UserAccountService service) {
-        this.service = service;
-    }
+    private final UserAccountService userService;
 
     @PostMapping
-    @Operation(summary = "Create new user")
-    public ResponseEntity<UserAccount> createUser(@RequestBody UserAccount user) {
-        return ResponseEntity.ok(service.createUser(user));
+    public ApiResponse createUser(@RequestBody UserAccount user) {
+        return new ApiResponse(true, "User created", userService.createUser(user));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update user")
-    public ResponseEntity<UserAccount> updateUser(@PathVariable Long id, @RequestBody UserAccount user) {
-        return ResponseEntity.ok(service.updateUser(id, user));
+    public ApiResponse updateUser(@PathVariable Long id, @RequestBody UserAccount user) {
+        return new ApiResponse(true, "User updated", userService.updateUser(id, user));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get user by ID")
-    public ResponseEntity<UserAccount> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getUserById(id));
+    public ApiResponse getUserById(@PathVariable Long id) {
+        return new ApiResponse(true, "User fetched", userService.getUserById(id));
     }
 
     @GetMapping
-    @Operation(summary = "Get all users")
-    public ResponseEntity<List<UserAccount>> getAllUsers() {
-        return ResponseEntity.ok(service.getAllUsers());
+    public List<UserAccount> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @PutMapping("/{id}/deactivate")
-    @Operation(summary = "Deactivate user")
-    public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
-        service.deactivateUser(id);
-        return ResponseEntity.ok().build();
+    public ApiResponse deactivateUser(@PathVariable Long id) {
+        userService.deactivateUser(id);
+        return new ApiResponse(true, "User deactivated");
     }
 }
